@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Indovina il Numero Casuale!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .game-section {
+            width: 75%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .classifica-section {
+            width: 25%;
+            padding: 40px;
+            background-color: #1E1E1E;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #fff; /* Rettangolo intorno alla classifica */
+            border-radius: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            width: 250px;
+            text-align: center;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            background-color: #FFD700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #FFB800;
+        }
+
+        .tentativi-list {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 8px;
+            width: 50%;
+            text-align: center;
+        }
+
+        .tentativi-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tentativi-list li {
+            padding: 5px;
+            border-bottom: 1px solid #444;
+        }
+
+        .tentativo-vincente {
+            color: #00FF00;
+            font-weight: bold;
+        }
+
+        .messaggio-vittoria {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00FF00;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .classifica-item {
+            width: 90%;
+            padding: 15px;
+            border-bottom: 2px solid #444;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-section">
+        <h1>🎯 Indovina il Numero!</h1>
+
+        <form th:action="@{/}" method="post">
+            <div class="input-group">
+                <input type="text" id="nomeGiocatore" name="nomeGiocatore" th:value="${nomeGiocatore}" placeholder="Inserisci il tuo nome" required/>
+            </div>
+
+            <div class="input-group">
+                <input type="number" id="numero" name="numero" min="1" max="100" placeholder="Numero (1-100)" required/>
+            </div>
+
+            <div class="button-container">
+                <button type="submit">🚀 Prova!</button>
+            </div>
+        </form>
+
+        <p class="messaggio-vittoria" th:if="${giocoTerminato}" th:text="'🎉 Hai indovinato il numero! Premi Gioca Ancora per ricominciare.'"></p>
+
+        <div class="tentativi-list" th:if="${tentativiEffettuati != null and tentativiEffettuati.size() > 0}">
+            <h3>📜 Storico Tentativi:</h3>
+            <ul>
+                <li th:each="tentativo : ${tentativiEffettuati}" th:text="${tentativo}"
+                    th:class="${tentativo.contains('🎉') ? 'tentativo-vincente' : ''}"></li>
+            </ul>
+        </div>
+
+        <form th:if="${giocoTerminato}" th:action="@{/gioca-ancora}" method="post">
+            <button type="submit">🔄 Gioca Ancora</button>
+        </form>
+    </div>
+
+    <div class="classifica-section">
+        <h2>🏆 Classifica</h2>
+        <div th:each="giocatore, stat : ${classifica}" class="classifica-item">
+            <p th:text="${giocatore.nome}"></p>
+            <p th:text="'Tentativi: ' + ${giocatore.tentativi}"></p>
+        </div>
+    </div>
+</body>
+</html>
